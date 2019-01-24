@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crash校验</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" user-scalable="no"/>
+    <script src="jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="crypto.js" type="text/javascript"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            word-break: break-all;
+        }
+
+        body {
+            background-image: url("background.png");
+            background-size: contain;
+            width: 100%;
+            height: 100%;
+            padding:2% 0;
+        }
+
+        .content {
+            background: url(Mask.png);
+            background-size: 100% 100%;
+            width: 72%;
+            height: 100%;
+            margin:0 auto;
+        }
+
+        .wrap {
+            width: 100%;
+            margin: 0 auto;
+            /*min-width: 1300px;*/
+            padding: 6% 0;
+        }
+
+        .inputText {
+            font-size: 20px;
+            color: #FFFFFF;
+        }
+
+        #gameParam {
+            width: 50%;
+            margin: 4% auto;
+        }
+
+        .inputDiv {
+            margin-top: 4%;
+        }
+
+        .title {
+            font-size: 30px;
+            color: #FFFFFF;
+            letter-spacing: 0;
+            text-align: center;
+        }
+
+        .textS {
+            font-size: 16px;
+            color: #DADADA;
+        }
+
+        .formulaTitle{
+            color:#FFFFFF;
+            font-size: 20px;
+        }
+        .verInpt {
+            width: 100%;
+            height: 30px;
+            margin-top: 2%;
+            color: #9E9FA2;
+            border: 0px;
+            outline: none;
+            cursor: pointer;
+            background: #282B37;
+
+        }
+
+        .verifyBtn {
+            width: 500px;
+            height: 60px;
+            display: block;
+            margin: 2% auto 0;
+            font-size: 18px;
+            background: #ECC214;
+            border-radius: 10px;
+        }
+
+        .address{
+            margin: 2% 34%;
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+
+        .formula {
+            margin-top: 1%;
+            color: #dadada;
+        }
+
+        @media screen and (max-width: 500px) {
+            body {
+                padding:5% 0;
+            }
+            .content {
+                width: 88%;
+            }
+            #gameParam {
+                width: 90%;
+            }
+            .title {
+                font-size: 16px;
+            }
+            .inputText {
+                font-size: 14px;
+            }
+            .textS {
+                font-size: 12px;
+            }
+            .verInpt {
+                height: 20px;
+            }
+            .formulaTitle {
+                font-size: 14px;
+            }
+
+            .formula{
+                font-size: 12px;
+            }
+            .verifyBtn {
+                width: 150px;
+                height: 35px;
+                margin: 8% auto 0;
+                font-size: 16px;
+            }
+            .address {
+                margin: 2% 4%;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<script>
+
+    //获取指定参数
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+
+    function getHashCode(str) {
+        var h = 0;
+        var len = str.length;
+        var t = 2147483648;
+        for (var i = 0; i < len; i++) {
+            h = 31 * h + str.charCodeAt(i);
+            if (h > 2147483647) h %= t;//java int溢出则取模
+        }
+        return h;
+
+    };
+
+    //计算方法
+    function getBpResult() {
+
+        //获取输入框的值
+        var param = document.getElementById("playerSignature").value.trim();
+        var result = 1.00;
+        var hash = CryptoJS.SHA256(param);
+        var hashCode = getHashCode(hash.toString())
+        if (hashCode % 101 === 0) {
+            return result
+        }
+        var h = parseInt(hash.toString().slice(0, 52 / 4), 16);
+        var e = Math.pow(2, 52);
+        result = (Math.floor((100 * e - h) / (e - h))) / 100;
+        console.log(result)
+        $("#reslut").val(result);
+
+    }
+
+
+    //页面初始化参数
+    window.onload = function () {
+        $("#playerSeed").val(GetQueryString('playerSeed'));
+        $("#playerSignature").val(GetQueryString('playerSignature'));
+        $("#publicKey").val('EOS6CG8VwJ8G1iFn6x781PMojmfD7i4kqqzsgd1AjWwAaEz35QGhn');
+    };
+
+
+</script>
+
+<body>
+<div class="content">
+    <div class="wrap">
+        <div class="title">
+            <p >Tobet Crash Verify</p>
+        </div>
+        <form id="gameParam">
+            <div class="inputDiv">
+                <p class="inputText" >玩家种子（Player Seed）:</p>
+                <p class="textS">GameId+BetPlayersCount+BetAmount+LastBetTime</p>
+                <input class="verInpt" id="playerSeed"/>
+            </div>
+            <div class="inputDiv">
+                <p class="inputText">玩家签名种子（Player Signature）:</p>
+                <p class="textS">Sign(GameId+BetPlayersCount+BetAmount+LastBetTime)</p>
+                <input class="verInpt" id="playerSignature"/>
+            </div>
+
+            <div class="inputDiv">
+                <p class="inputText">签名公钥（Public Key）:</p>
+                <input class="verInpt" id="publicKey"/>
+            </div>
+
+            <div class="inputDiv">
+                <p class="inputText">结果（reslut）:</p>
+                <input class="verInpt" disabled="disabled" id="reslut"/>
+            </div>
+            <div class="inputDiv">
+                <p class="formulaTitle">公式（formula）：</p>
+                <p class="formula"> hash = SHA256(Player Signature);</p>
+                <p class="formula">hashCode = hash.hashcode;</p>
+                <p class="formula"> if (hashCode % 101 === 0) {</p>
+                <p class="formula"> return 1;</p>
+                <p class="formula"> }</p>
+                <p class="formula"> h = parseInt(hash.slice(0, 52 / 4), 16);</p>
+                <p class="formula">e = Math.pow(2, 52);</p>
+                <p class="formula"> result = (Math.floor((100 * e - h) / (e - h))) / 100;</p>
+            </div>
+        </form>
+        <button class="verifyBtn" onclick="getBpResult()">Verify</button>
+        <div class="address">
+            <p >源码地址：<a style="color: #FFFFFF" href="https://github.com/TobetOne/CrashGame" target="_blank">https://github.com/TobetOne/CrashGame</a></p>
+        </div>
+
+
+    </div>
+</div>
+</body>
+</html>
