@@ -1,21 +1,21 @@
-# Tobet crash游戏公平性验证说明
+# Tobet Crash游戏公平性验证说明
 
-验证工具网页请访问：https://github.com/TobetOne/CrashGame
+验证工具网页请访问：https://github.com/TobetOne/CrashGame/
 
 在使用此网页工具之前，请仔细阅读以下说明。你可以根据如下说明，自行开发程序验证。
 ## 开奖结果计算
-  1. 根据游戏数据生成随机种子,并签名：
-    seed = GameId+BetPlayersCount+BetAmount+LastBetTime;
-    seed_sign = sign(seed)
-  2. 对随机种子hash（SH256）运算，结果转换为16进制
-    hash_hex = hex(sha256(seed_sign))
-  4. 截取hash_hex前13位参与计算，计算结果为1到2^52/100的一个双曲函数
-    if(hashcode(hash_hex)%101 == 0){
-       result = 1.00;
-    }else{
-       h = Long.parseLong(hash_hex.slice(0, 52 / 4), 16);
-       e = Math.pow(2, 52);
-       result = Math.floor((100 * e - h) / (e - h)) / 100;
+  1. 根据游戏数据生成随机种子,并签名：  
+    seed = GameId+BetPlayersCount+BetAmount+LastBetTime;  
+    seed_sign = sign(seed)  
+  2. 对随机种子hash（SH256）运算，结果转换为16进制  
+    hash_hex = hex(sha256(seed_sign))   
+  4. 截取hash_hex前13位参与计算，计算结果为1到2^52/100的一个双曲函数  
+    if(hashcode(hash_hex)%101 == 0){  
+       result = 1.00;  
+    }else{  
+       h = Long.parseLong(hash_hex.slice(0, 52 / 4), 16);  
+       e = Math.pow(2, 52);  
+       result = Math.floor((100 * e - h) / (e - h)) / 100;  
     }
 ## 随机因子说明
    seed = GameId+BetPlayersCount+BetAmount+LastBetTime
