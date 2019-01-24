@@ -10,13 +10,16 @@
   2. 对随机种子hash（SH256）运算，结果转换为16进制  
     hash_hex = hex(sha256(seed_sign))   
   4. 截取hash_hex前13位参与计算，计算结果为1到2^52/100的一个双曲函数  
-    if(hashcode(hash_hex)%101 == 0){  
-       result = 1.00;  
-    }else{  
-       h = Long.parseLong(hash_hex.slice(0, 52 / 4), 16);  
-       e = Math.pow(2, 52);  
-       result = Math.floor((100 * e - h) / (e - h)) / 100;  
-    }
+  
+```javascript
+if(hashcode(hash_hex)%101 == 0){  
+    result = 1.00;  
+}else{  
+    h = Long.parseLong(hash_hex.slice(0, 52 / 4), 16);  
+    e = Math.pow(2, 52);  
+    result = Math.floor((100 * e - h) / (e - h)) / 100;  
+}
+```
 ## 随机因子说明
    seed = GameId+BetPlayersCount+BetAmount+LastBetTime
 *  GameId:游戏ID
