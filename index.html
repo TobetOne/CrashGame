@@ -19,7 +19,7 @@
             background-size: contain;
             width: 100%;
             height: 100%;
-            padding:2% 0;
+            padding: 2% 0;
         }
 
         .content {
@@ -27,7 +27,7 @@
             background-size: 100% 100%;
             width: 72%;
             height: 100%;
-            margin:0 auto;
+            margin: 0 auto;
         }
 
         .wrap {
@@ -63,10 +63,11 @@
             color: #DADADA;
         }
 
-        .formulaTitle{
-            color:#FFFFFF;
+        .formulaTitle {
+            color: #FFFFFF;
             font-size: 20px;
         }
+
         .verInpt {
             width: 100%;
             height: 30px;
@@ -89,7 +90,7 @@
             border-radius: 10px;
         }
 
-        .address{
+        .address {
             margin: 2% 34%;
             font-size: 14px;
             color: #FFFFFF;
@@ -97,44 +98,59 @@
 
         .formula {
             margin-top: 1%;
+            font-size: 14px;
             color: #dadada;
+
+        }
+        pre{
+            white-space:pre-wrap;
+            word-wrap:break-word;
         }
 
         @media screen and (max-width: 500px) {
             body {
-                padding:5% 0;
+                padding: 5% 0;
             }
+
             .content {
                 width: 88%;
             }
+
             #gameParam {
                 width: 90%;
             }
+
             .title {
                 font-size: 16px;
             }
+
             .inputText {
                 font-size: 14px;
             }
+
             .textS {
                 font-size: 12px;
             }
+
             .verInpt {
                 height: 20px;
             }
+
             .formulaTitle {
                 font-size: 14px;
             }
 
-            .formula{
-                font-size: 12px;
+            .formula {
+                font-size: 8px;
             }
+
             .verifyBtn {
                 width: 150px;
                 height: 35px;
                 margin: 8% auto 0;
                 font-size: 16px;
             }
+
             .address {
                 margin: 2% 4%;
                 font-size: 12px;
@@ -153,38 +169,61 @@
         return null;
     }
 
-
-    function getHashCode(str) {
-        var h = 0, off = 0;
-        var len = str.length; for(var i = 0; i < len; i++){
-            h = 31 * h + str.charCodeAt(off++);
-            if(h>0x7fffffff || h<0x80000000){
-                h=h & 0xffffffff;
+    function hexToInt(hex) {
+        var chs = hex.toLowerCase().toCharArray();
+        if (chs.length < 8) {
+            var ret = 0;
+            for (var i = 0; i < chs.length; i++) {
+                if (chs[i] > '9') {
+                    // console.log(chs[i].charCodeAt(0) - 87);
+                    ret += (chs[i].charCodeAt(0) - 87) << (4 * (chs.length - 1 - i));
+                } else if (chs[i] > '0') {
+                    // console.log(chs[i].charCodeAt(0) - 48);
+                    ret += (chs[i].charCodeAt(0) - 48) << (4 * (chs.length - 1 - i));
+                }
             }
-        }
-        return h;
 
-    };
+        }
+        return ret;
+    }
+
+    /* function getHashCode(str) {
+         var h = 0, off = 0;
+         var len = str.length; for(var i = 0; i < len; i++){
+             h = 31 * h + str.charCodeAt(off++);
+             if(h>0x7fffffff || h<0x80000000){
+                 h=h & 0xffffffff;
+             }
+         }
+         return h;
+
+     };*/
 
     //计算方法
     function getBpResult() {
-
         //获取输入框的值
         var param = document.getElementById("playerSignature").value.trim();
         var result = 1.00;
         var hash = CryptoJS.SHA256(param);
-        var hashCode = getHashCode(hash.toString())
-        if (hashCode % 101 === 0) {
+        var hashSixInt = hexToInt(hash.toString().substring(0, 6))
+        if (hashSixInt % 101 === 0) {
             return result
         }
         var h = parseInt(hash.toString().slice(0, 52 / 4), 16);
         var e = Math.pow(2, 52);
         result = (Math.floor((100 * e - h) / (e - h))) / 100;
-        console.log(result)
+        //result = Math.min(100, result)
         $("#reslut").val(result);
-
     }
 
+    String.prototype.toCharArray = function () {
+        var arr = new Array();
+        for (var index = 0; index < this.length; index++) {
+            arr[index] = this.charAt(index);
+        }
+        return arr;
+
+    }
 
     //页面初始化参数
     window.onload = function () {
@@ -200,11 +239,11 @@
 <div class="content">
     <div class="wrap">
         <div class="title">
-            <p >Tobet Crash Verify</p>
+            <p>Tobet Crash Verify</p>
         </div>
         <form id="gameParam">
             <div class="inputDiv">
-                <p class="inputText" >玩家种子（Player Seed）:</p>
+                <p class="inputText">玩家种子（Player Seed）:</p>
                 <p class="textS">GameId+BetPlayersCount+BetAmount+LastBetTime</p>
                 <input class="verInpt" id="playerSeed"/>
             </div>
@@ -224,20 +263,30 @@
                 <input class="verInpt" disabled="disabled" id="reslut"/>
             </div>
             <div class="inputDiv">
-                <p class="formulaTitle">公式（formula）：</p>
-                <p class="formula"> hash = SHA256(Player Signature);</p>
-                <p class="formula">hashCode = hash.hashcode;</p>
-                <p class="formula"> if (hashCode % 101 === 0) {</p>
-                <p class="formula"> return 1;</p>
-                <p class="formula"> }</p>
-                <p class="formula"> h = parseInt(hash.slice(0, 52 / 4), 16);</p>
-                <p class="formula">e = Math.pow(2, 52);</p>
-                <p class="formula"> result = (Math.floor((100 * e - h) / (e - h))) / 100;</p>
+             <pre class="formula">
+公式（formula）：
+
+hash = SHA256(Player Signature);
+
+hashSixInt = hexToInt(hash.substring(0,6))
+
+if (hashSixInt % 101 === 0) {
+
+    return 1;
+
+  }
+
+h = parseInt(hash.slice(0, 52 / 4), 16);
+
+e = Math.pow(2, 52);
+
+result = (Math.floor((100 * e - h) / (e - h))) / 100;</pre>
             </div>
         </form>
         <button class="verifyBtn" onclick="getBpResult()">Verify</button>
         <div class="address">
-            <p >源码地址：<a style="color: #FFFFFF" href="https://github.com/TobetOne/CrashGame" target="_blank">https://github.com/TobetOne/CrashGame</a></p>
+            <p>源码地址：<a style="color: #FFFFFF" href="https://github.com/TobetOne/CrashGame" target="_blank">https://github.com/TobetOne/CrashGame</a>
+            </p>
         </div>
 
 
