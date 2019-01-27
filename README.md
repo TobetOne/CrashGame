@@ -8,11 +8,13 @@
     seed = GameId+BetPlayersCount+BetAmount+LastBetTime;  
     seed_sign = sign(seed)  
   2. 对随机种子hash（SH256）运算，结果转换为16进制  
-    hash_hex = hex(sha256(seed_sign))   
+    hash_hex = hex(sha256(seed_sign)) 
+  3. 对hash_hex 截取前6位进行转换成数字进行运算，结果在进行101取余判断
+    hexToInt(hash.substring(0,6))%101
   4. 截取hash_hex前13位参与计算，计算结果为1到2^52/100的一个双曲函数  
   
 ```javascript
-if(hashcode(hash_hex)%101 == 0){  
+if(hexToInt(hash.substring(0,6))%101 == 0){  
     result = 1.00;  
 }else{  
     h = Long.parseLong(hash_hex.slice(0, 52 / 4), 16);  
