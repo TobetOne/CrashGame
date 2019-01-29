@@ -214,7 +214,7 @@
         var e = Math.pow(2, 52);
         result = (Math.floor((100 * e - h) / (e - h))) / 100;
         //result = Math.min(100, result)
-        $("#reslut").val(result);
+        $("#result").val(result);
     }
 
     String.prototype.toCharArray = function () {
@@ -261,7 +261,7 @@
 
             <div class="inputDiv">
                 <p class="inputText">结果（Result）:</p>
-                <input class="verInpt" disabled="disabled" id="reslut"/>
+                <input class="verInpt" style="color: #FFCD00!important;" id="result"/>
             </div>
             <div class="inputDiv">
              <pre class="formula">
