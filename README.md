@@ -7,7 +7,7 @@
   1. 根据游戏数据生成随机种子,并签名：  
     seed = GameId+BetPlayersCount+BetAmount+LastBetTime;  
     seed_sign = sign(seed)  
-  2. 对随机种子hash（SH256）运算，结果转换为16进制  
+  2. 对随机种子seed_sign 进行SH256运算，结果转换为16进制  
     hash_hex = hex(sha256(seed_sign)) 
   3. 对hash_hex 截取前6位进行转换成数字进行运算，结果在进行101取余判断
     hexToInt(hash.substring(0,6))%101
